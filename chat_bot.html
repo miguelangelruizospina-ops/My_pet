@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mipet - Asistente Inteligente</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+        :root {
+            --naranja: #FF9800;
+            --borde-oscuro: #1a0d02;
+            --cafe-fondo-cuadro: rgba(60, 35, 15, 0.9);
+            --blanco: #ffffff;
+            --cian: #00E5FF;
+            --verde-emergencia: #ff4757;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle, #8d5a32 0%, #4a2d15 100%);
+            font-family: 'Fredoka One', cursive;
+            overflow: hidden;
+        }
+
+        /* --- BOTÓN DE INICIO UNIFICADO --- */
+        .btn-inicio-unificado {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border: 2px solid var(--borde-oscuro);
+            padding: 8px 18px;
+            border-radius: 50px;
+            text-decoration: none;
+            z-index: 9999;
+            box-shadow: 0 4px 0 var(--borde-oscuro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+        }
+
+        .btn-inicio-unificado span {
+            color: var(--borde-oscuro);
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .btn-inicio-unificado:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--borde-oscuro);
+        }
+
+        /* --- HUELLAS OSCURECIDAS --- */
+        .background-paws {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .paw-small {
+            position: absolute;
+            width: 80px;
+            fill: #1a0f06;
+            opacity: 0.4;
+        }
+
+        .p1 { top: 5%; left: 10%; transform: rotate(-20deg); }
+        .p2 { top: 20%; right: 15%; transform: rotate(30deg); }
+        .p3 { bottom: 10%; left: 5%; transform: rotate(10deg); }
+        .p4 { bottom: 25%; right: 5%; transform: rotate(-15deg); }
+        .p5 { top: 50%; left: 40%; transform: rotate(45deg) scale(0.6); }
+
+        /* --- CONTENEDOR DEL CHAT --- */
+        .chat-container {
+            background-color: var(--cafe-fondo-cuadro);
+            width: 95%;
+            max-width: 450px;
+            height: 85vh;
+            border-radius: 40px;
+            border: 4px solid var(--borde-oscuro);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0px 15px 0px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        .chat-header {
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 3px solid var(--borde-oscuro);
+            display: flex;
+            justify-content: flex-end; /* Alinea contenido a la derecha para dejar espacio al botón de inicio */
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 18px;
+            color: white;
+            text-shadow: 2px 2px 0px var(--borde-oscuro);
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .btn-emergencia-top {
+            background: #ff4757;
+            color: white;
+            text-decoration: none;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 2px solid var(--borde-oscuro);
+            cursor: pointer;
+            box-shadow: 0px 3px 0px var(--borde-oscuro);
+            white-space: nowrap;
+            font-family: 'Fredoka One';
+        }
+
+        .btn-emergencia-top:active {
+            transform: translateY(2px);
+            box-shadow: 0px 1px 0px var(--borde-oscuro);
+        }
+
+        /* Área de Mensajes */
+        .chat-window {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 25px;
+            font-size: 15px;
+            line-height: 1.4;
+            border: 3px solid var(--borde-oscuro);
+            position: relative;
+            color: #000000;
+        }
+
+        .msg-bot {
+            align-self: flex-start;
+            background-color: var(--blanco);
+            border-bottom-left-radius: 5px;
+        }
+
+        .msg-user {
+            align-self: flex-end;
+            background-color: var(--naranja);
+            border-bottom-right-radius: 5px;
+        }
+
+        /* Entrada de Texto */
+        .chat-input-area {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            border-top: 3px solid var(--borde-oscuro);
+        }
+
+        input {
+            flex-grow: 1;
+            padding: 15px;
+            border-radius: 50px;
+            border: 3px solid var(--borde-oscuro);
+            font-family: 'Fredoka One';
+            outline: none;
+            color: #000000;
+        }
+
+        .btn-send {
+            background: var(--naranja);
+            border: 3px solid var(--borde-oscuro);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 4px 0px var(--borde-oscuro);
+        }
+
+        .btn-send:active {
+            transform: translateY(3px);
+            box-shadow: 0px 1px 0px var(--borde-oscuro);
+        }
+
+        .chat-window::-webkit-scrollbar { width: 8px; }
+        .chat-window::-webkit-scrollbar-thumb {
+            background: var(--borde-oscuro);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="menu_principal.html" class="btn-inicio-unificado">
+        <span>⬅ Inicio</span>
+    </a>
+
+    <svg style="display: none;">
+        <symbol id="huella-final" viewBox="0 0 100 100">
+            <path d="M22,25 Q25,8 28,25" />
+            <path d="M42,15 Q45,-2 48,15" />
+            <path d="M58,15 Q61,-2 64,15" />
+            <path d="M78,25 Q81,8 84,25" />
+            <circle cx="28" cy="38" r="11" />
+            <circle cx="48" cy="30" r="13" />
+            <circle cx="68" cy="30" r="13" />
+            <circle cx="88" cy="38" r="11" />
+            <path d="M30,65 C30,50 45,45 58,45 C70,45 85,50 85,65 C85,85 70,95 58,95 C45,95 30,85 30,65 Z" />
+        </symbol>
+    </svg>
+
+    <div class="background-paws">
+        <svg class="paw-small p1"><use xlink:href="#huella-final" /></svg>
+        <svg class="paw-small p2"><use xlink:href="#huella-final" /></svg>
+        <svg class="paw-small p3"><use xlink:href="#huella-final" /></svg>
+        <svg class="paw-small p4"><use xlink:href="#huella-final" /></svg>
+        <svg class="paw-small p5"><use xlink:href="#huella-final" /></svg>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Asistente Mipet 🐾</h1>
+            <button class="btn-emergencia-top" onclick="window.location.href='emergencia.html'">
+                Emergencia
+            </button>
+        </div>
+        
+        <div class="chat-window">
+            <div class="msg msg-bot">
+                ¡Hola! Soy tu asistente Mipet. ¿En qué puedo ayudarte hoy?
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" placeholder="Pregúntame algo...">
+            <button class="btn-send">🐾</button>
+        </div>
+    </div>
+
+    <script>
+        const inputChat = document.querySelector('input[type="text"]');
+        const botonEnviar = document.querySelector('.btn-send');
+        const ventanaChat = document.querySelector('.chat-window');
+
+        function procesarMensaje() {
+            const mensajeTexto = inputChat.value.trim();
+
+            if (mensajeTexto !== "" && ventanaChat) {
+                const burbuja = document.createElement('div');
+                burbuja.className = 'msg msg-user';
+                burbuja.textContent = mensajeTexto;
+
+                ventanaChat.appendChild(burbuja);
+                inputChat.value = "";
+                ventanaChat.scrollTop = ventanaChat.scrollHeight;
+
+                setTimeout(() => {
+                    const respuesta = document.createElement('div');
+                    respuesta.className = 'msg msg-bot';
+                    respuesta.textContent = "¡Guau! Recibido. Estoy procesando tu solicitud. 🐾";
+                    ventanaChat.appendChild(respuesta);
+                    ventanaChat.scrollTop = ventanaChat.scrollHeight;
+                }, 800);
+            }
+        }
+
+        if (botonEnviar) {
+            botonEnviar.onclick = procesarMensaje;
+        }
+
+        if (inputChat) {
+            inputChat.onkeypress = function (e) {
+                if (e.key === 'Enter') {
+                    procesarMensaje();
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>
